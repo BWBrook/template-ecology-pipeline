@@ -1,0 +1,3 @@
+{
+  "//": "Placeholder. Generate the real lockfile with `renv::snapshot()`."
+}

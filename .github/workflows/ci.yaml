@@ -1,0 +1,36 @@
+
+### `.github/workflows/ci.yaml`
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      RENV_PATHS_ROOT: ~/.local/share/renv  # enable cache across jobs
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+
+      - name: Install system libraries
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+
+      - name: Restore renv library
+        run: |
+          Rscript -e 'install.packages("renv", repos="https://cloud.r-project.org")'
+          Rscript -e 'renv::restore(prompt = FALSE)'
+
+      - name: Run _targets pipeline
+        run: Rscript -e 'targets::tar_make()'
+
+      - uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Render report
+        run: quarto render report.qmd

@@ -1,0 +1,28 @@
+---
+title: "Minimal Ecological Pipeline Report"
+format: html
+execute: 
+  echo: false
+---
+
+```{r}
+library(targets)
+tar_load(raw_data, model_summary, model)
+````
+
+## Model summary
+
+```{r}
+model_summary
+```
+
+## Observed vs. fitted
+
+```{r}
+library(ggplot2)
+ggplot(raw_data, aes(temperature, count)) +
+  geom_point() +
+  stat_smooth(method = "glm", method.args = list(family = poisson()), se = FALSE)
+```
+
+````
